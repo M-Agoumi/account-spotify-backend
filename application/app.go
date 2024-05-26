@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -17,7 +18,7 @@ func New() *App {
 	return app
 }
 
-func (a *App) Start() error {
+func (a *App) Start(ctx context.Context) error {
 	server := &http.Server{
 		Addr:    ":3000",
 		Handler: a.router,
