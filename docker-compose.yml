@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: golang_container
+    container_name: spotify_account_go
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -26,7 +26,7 @@ services:
 
   postgresdb:
     image: postgres:latest
-    container_name: postgres_container
+    container_name: spotify_account_database
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -34,8 +34,6 @@ services:
       - DATABASE_HOST=${DB_HOST}
     ports:
       - '1234:5432'
-    volumes:
-      - ./.docker/postgresql:/var/lib/postgresql/data
     networks:
       - spotify-account
 
