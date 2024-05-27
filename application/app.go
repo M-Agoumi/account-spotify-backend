@@ -19,7 +19,6 @@ func New() *App {
 }
 
 // @todo next step
-// setup the connection to the database
 // register the user to the database in the register route
 
 func (a *App) Start(ctx context.Context) error {
