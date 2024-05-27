@@ -1,0 +1,59 @@
+@startuml
+header documentation by agoumi.mohamed@outlook.com
+Title Register API flow
+skinparam handwritten true
+
+actor User as u
+
+participant Account_api as api
+database postgres as db
+
+== First Request ==
+u -> api: -X POST /register/check-email
+rnote right u
+    body {"email": "example@example.com"}
+end note
+
+api -> db: select * from users where email = ?
+db -> api: id
+
+alt #lightBlue id == 0
+    api -[#50FF50]> u: HTTP **200**\n""email available""
+else #pink id != 0
+    api -[#FF5000]> u: HTTP **400**\n""email already linked to an account""
+    note right u: <font color="red">""please use a different email""</font>
+end
+
+== Collecting Infos  ==
+u -> u: Enter password, name, birthday, and gender
+activate u#BBBBFF
+
+u -> u: Check password complexity and agree to terms
+deactivate u
+
+== Final Registration Request ==
+u -> api: -X POST /register
+rnote right u
+    body {
+    "email": "example@example.com",
+    "password": "password",
+    "name": "example example",
+    "birthday": "02/15/1980",
+    "gender": "f",
+    "terms": true
+    }
+end note
+
+api -> api: validate body (email/password, etc.)
+alt #lightBlue data valid
+    api -> db: insert into users (with hashed password)
+    api -[#50FF50]> u: HTTP **201**\n""User registered successfully""
+else #pink
+    api -[#FF5000]> u: HTTP **400**\n""validation error message""
+    note right u: <font color="red">""please correct the information""</font>
+end
+
+u -> u: Redirect to home page
+activate u #BBBBFF
+deactivate u
+@enduml
