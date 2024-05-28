@@ -8,4 +8,5 @@ func LoadRegisterRoute(router chi.Router) {
 	registerHandler := Register{}
 
 	router.Post("/", registerHandler.Register)
+	router.Post("/check-email", registerHandler.CheckEmail)
 }
