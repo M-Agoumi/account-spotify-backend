@@ -3,6 +3,7 @@ package register
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"magoumi/spotify-account/config"
 	"magoumi/spotify-account/model"
@@ -17,9 +18,10 @@ type Register struct{}
 func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 	// Load the body
 	var user model.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err := util.DecodeJSONBody(r, &user)
 	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		fmt.Println(err)
+		util.JSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -28,18 +30,17 @@ func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 	config.DB.Where("email = ?", user.Email).First(&existingUser)
 
 	if existingUser.ID != 0 {
-		http.Error(w, "User already registered", http.StatusBadRequest)
+		util.JSONError(w, http.StatusBadRequest, "User already registered")
 		return
 	}
 
 	result := config.DB.Create(&user)
 	if result.Error != nil {
-		http.Error(w, "Something went wrong, please try again later", http.StatusInternalServerError)
+		util.JSONError(w, http.StatusInternalServerError, "Something went wrong, please try again later")
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	_, _ = w.Write([]byte("User registered successfully"))
+	util.JSONResponse(w, http.StatusCreated, map[string]string{"message": "User registered successfully"})
 }
 
 func (h *Register) CheckEmail(w http.ResponseWriter, r *http.Request) {
