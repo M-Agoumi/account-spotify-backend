@@ -15,6 +15,7 @@ import (
 type Register struct{}
 
 // Register handles the HTTP request for user registration.
+// @todo add captcha for all endpoints in this file
 func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 	// Load the body
 	var user model.User
