@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"magoumi/spotify-account/register"
+	"magoumi/spotify-account/controller/register"
 	"net/http"
 )
 
@@ -12,7 +12,7 @@ func loadRoutes() http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 	})
 	router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
