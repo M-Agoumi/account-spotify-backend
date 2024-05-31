@@ -1,0 +1,61 @@
+@startuml
+header documentation by agoumi.mohamed@outlook.com
+Title Login API flow
+skinparam handwritten true
+skinparam NoteBackgroundColor #023047
+
+actor User as u #ffb703
+participant Account_api as api #8ecae6
+database postgres as db #2a9d8f
+
+alt login with email
+    u -> u: collect email/username and password
+    activate u #ffb703
+    u -> api: -X POST /login
+    deactivate u
+    rnote right u
+        <font color="8ecae6">{
+            <font color="8ecae6">"<font color="ffb703">username</font><font color="8ecae6">": "<font color="fb8500">example@email.com|username<font color="8ecae6">",
+            <font color="8ecae6">"<font color="ffb703">password</font><font color="8ecae6">": "<font color="fb8500">password<font color="8ecae6">",
+            <font color="8ecae6">"<font color="ffb703">rememberme</font><font color="8ecae6">": <font color="fb8500">true|false
+        <font color="8ecae6">}
+    end note
+
+    api -> db: select * from users where email = ?
+    db -> api: id
+    alt #lightBlue id != 0
+        api -> api: hash(password) == db.password
+        api -[#50FF50]> u: HTTP **200**\n""Refresh token + JWT""
+    else #pink id == 0 || wrong password
+        api -[#FF5000]> u: HTTP **401**\n""creds don't match any account""
+        note right u#FFF: <font color="fb8500">""please use a different email""</font>
+    end
+end
+
+alt connect with phone
+    u -> u: collect phone number
+    activate u #ffb703
+    u -> api: -X POST /login/phone
+    deactivate u
+    rnote right u
+        <font color="8ecae6">{
+            <font color="8ecae6">"<font color="ffb703">code</font><font color="8ecae6">": "<font color="fb8500">666666666<font color="8ecae6">",
+            <font color="8ecae6">"<font color="ffb703">phone</font><font color="8ecae6">": "<font color="fb8500">212<font color="8ecae6">"
+        <font color="8ecae6">}
+    end note
+
+    api -> db: select * from users where phone = ?
+    db -> api: id
+    alt #pink id != 0
+        api -[#FF5000]> u: HTTP **401**\n""login with phone is prohibited""
+    else #lightBlue id == 0 || wrong password
+        api -[#50FF50]> u: HTTP **301**\n""continue sign up""
+    end
+end
+
+alt connect with socials
+    note right u
+        <font color="FFF">@todo
+    end note
+end
+@enduml
