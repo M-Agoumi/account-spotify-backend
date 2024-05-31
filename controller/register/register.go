@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/M-Agoumi/account-spotify-backend/config"
+	"github.com/M-Agoumi/account-spotify-backend/model"
+	"github.com/M-Agoumi/account-spotify-backend/util"
 	"gorm.io/gorm"
-	"magoumi/spotify-account/config"
-	"magoumi/spotify-account/model"
-	"magoumi/spotify-account/util"
 	"net/http"
 )
 

@@ -2,9 +2,9 @@ package application
 
 import (
 	"fmt"
+	"github.com/M-Agoumi/account-spotify-backend/controller/register"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"magoumi/spotify-account/controller/register"
 	"net/http"
 )
 
@@ -22,6 +22,7 @@ func loadRoutes() http.Handler {
 			return
 		}
 	})
+
 	router.Route("/register", register.LoadRegisterRoute)
 	return router
 }

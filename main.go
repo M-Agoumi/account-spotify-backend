@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/M-Agoumi/account-spotify-backend/application"
+	"github.com/M-Agoumi/account-spotify-backend/config"
+	"github.com/M-Agoumi/account-spotify-backend/model"
 	"github.com/joho/godotenv"
 	"log"
-	"magoumi/spotify-account/application"
-	"magoumi/spotify-account/config"
-	"magoumi/spotify-account/model"
 )
 
 func main() {

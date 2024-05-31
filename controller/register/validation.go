@@ -2,7 +2,7 @@ package register
 
 import (
 	"fmt"
-	"magoumi/spotify-account/model"
+	"github.com/M-Agoumi/account-spotify-backend/model"
 )
 
 // validateUser checks if the required fields are present and not empty
