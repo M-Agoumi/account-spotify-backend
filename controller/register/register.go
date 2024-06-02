@@ -52,7 +52,7 @@ func (h *Register) CheckEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate the required fields
-	if err := validateUser(user); err != nil {
+	if err := validateUserEmail(user); err != nil {
 		util.JSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
