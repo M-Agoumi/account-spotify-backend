@@ -48,3 +48,23 @@ func DecodeJSONBody(r *http.Request, dst interface{}) error {
 	}
 	return nil
 }
+
+type ValidationError struct {
+	Errors []string
+}
+
+func (v *ValidationError) Error() string {
+	return strings.Join(v.Errors, ", ")
+}
+
+func NewValidationError() *ValidationError {
+	return &ValidationError{Errors: []string{}}
+}
+
+func (v *ValidationError) Add(err string) {
+	v.Errors = append(v.Errors, err)
+}
+
+func (v *ValidationError) HasErrors() bool {
+	return len(v.Errors) > 0
+}
