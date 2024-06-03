@@ -8,13 +8,12 @@ import (
 	"regexp"
 	"slices"
 	"time"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	gorm.Model
-	ID           uint `gorm:"uniqueIndex"` // Standard field for the primary key
+	ID           uint    `gorm:"uniqueIndex"` // Standard field for the primary key
+	Username     *string `gorm:"uniqueIndex"` // please save
 	Name         string
 	Email        *string    `gorm:"uniqueIndex"` // A pointer to a string, allowing for null values
 	Password     string     `json:"-"`           // Exclude from JSON response
@@ -43,7 +42,7 @@ func (u *User) UnmarshalJSON(data []byte) error {
 	}
 
 	// Validate email
-	if aux.Email != nil && !isValidEmail(*aux.Email) {
+	if aux.Email != nil && !IsValidEmail(*aux.Email) {
 		return fmt.Errorf("invalid email format")
 	}
 
@@ -51,15 +50,10 @@ func (u *User) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("invalid gender format")
 	}
 
-	// Hash the password
+	// parse the password
 	if aux.Password != "" {
-		hashedPassword, err := hashPassword(aux.Password)
-		if err != nil {
-			return fmt.Errorf("error hashing password")
-		}
-		u.Password = hashedPassword
+		u.Password = aux.Password
 	}
-
 	// Parse the custom birthday format
 	if aux.Birthday != "" {
 		birthday, err := time.Parse("01/02/2006", aux.Birthday)
@@ -78,16 +72,9 @@ func isValidGender(gender string) bool {
 	return slices.Contains(gendersList, gender)
 }
 
-// Email validation function
-func isValidEmail(email string) bool {
+// IsValidEmail Email validation function
+func IsValidEmail(email string) bool {
 	regex := `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 	re := regexp.MustCompile(regex)
 	return re.MatchString(email)
-}
-
-// Password hashing function
-// @todo add password validation for complexity
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
 }
