@@ -14,6 +14,9 @@ WORKDIR /app
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
+# Run the shell script
+RUN chmod +x cmd/copy-env.sh && ./copy-env.sh
+
 COPY .env .
 
 # Download all the dependencies
