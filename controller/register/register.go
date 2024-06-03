@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"github.com/M-Agoumi/account-spotify-backend/config"
 	"github.com/M-Agoumi/account-spotify-backend/model"
+	"github.com/M-Agoumi/account-spotify-backend/model/repository"
 	"github.com/M-Agoumi/account-spotify-backend/util"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
 )
@@ -35,6 +37,8 @@ func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// hash password
+	user.Password, _ = hashPassword(user.Password)
 	result := config.DB.Create(&user)
 	if result.Error != nil {
 		util.JSONError(w, http.StatusInternalServerError, "Something went wrong, please try again later")
@@ -59,7 +63,7 @@ func (h *Register) CheckEmail(w http.ResponseWriter, r *http.Request) {
 
 	email := *user.Email
 
-	existingUser, err := findUserByEmail(email)
+	existingUser, err := repository.FindUserByEmail(email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		util.JSONError(w, http.StatusInternalServerError, "Database error")
 		return
@@ -86,8 +90,9 @@ func decodeRequestBody(w http.ResponseWriter, r *http.Request, v interface{}) er
 	return nil
 }
 
-func findUserByEmail(email string) (model.User, error) {
-	var user model.User
-	result := config.DB.Where("email = ?", email).First(&user)
-	return user, result.Error
+// Password hashing function
+// @todo add password validation for complexity
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
 }
