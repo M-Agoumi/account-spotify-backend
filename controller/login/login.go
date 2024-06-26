@@ -54,10 +54,7 @@ func (h *Login) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := uint(1)
-	email := "user@example.com"
-
-	token, err := jwtService.GenerateJWT(userID, email)
+	token, err := jwtService.GenerateJWT(existingUser.ID, *existingUser.Email)
 	if err != nil {
 		fmt.Printf("Error generating token: %v\n", err)
 		return
