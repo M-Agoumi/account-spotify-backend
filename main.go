@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	app := application.New()
-
 	errDot := godotenv.Load()
 	if errDot != nil {
 		log.Println("Error loading .env file")
 	}
+
+	app := application.New()
 
 	config.ConnectDatabase() // Initialize the database connection
 	errMigration := config.DB.AutoMigrate(&model.User{})
