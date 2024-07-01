@@ -21,6 +21,7 @@ services:
       - .:/app
     depends_on:
       - postgresdb
+      - mailhog
     networks:
       - spotify-account
 
@@ -34,6 +35,15 @@ services:
       - DATABASE_HOST=${DB_HOST}
     ports:
       - '1234:5432'
+    networks:
+      - spotify-account
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
     networks:
       - spotify-account
 
