@@ -1,11 +1,11 @@
 package login
 
 import (
-	"github.com/M-Agoumi/account-spotify-backend/model"
+	"github.com/M-Agoumi/account-spotify-backend/model/user"
 	"github.com/M-Agoumi/account-spotify-backend/util"
 )
 
-func ValidateLoginBody(user model.User) (error, bool) {
+func ValidateLoginBody(user user.User) (error, bool) {
 	validationErrors := util.NewValidationError()
 
 	// Validate username

@@ -2,8 +2,7 @@ package login
 
 import (
 	"fmt"
-	"github.com/M-Agoumi/account-spotify-backend/model"
-	"github.com/M-Agoumi/account-spotify-backend/model/repository"
+	"github.com/M-Agoumi/account-spotify-backend/model/user"
 	"github.com/M-Agoumi/account-spotify-backend/service/jwtService"
 	"github.com/M-Agoumi/account-spotify-backend/util"
 	"golang.org/x/crypto/bcrypt"
@@ -15,27 +14,27 @@ type Login struct{}
 // Login
 // @todo add captcha for all endpoints in this file
 func (h *Login) Login(w http.ResponseWriter, r *http.Request) {
-	var user model.User
-	err := util.DecodeJSONBody(r, &user)
+	var u user.User
+	err := util.DecodeJSONBody(r, &u)
 	if err != nil {
 		fmt.Println(err)
 		util.JSONError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	println(user.Password)
-	err, isValid := ValidateLoginBody(user)
+	println(u.Password)
+	err, isValid := ValidateLoginBody(u)
 	if !isValid {
 		util.JSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// check if we should query by email or username
-	var existingUser model.User
-	if model.IsValidEmail(*user.Username) {
-		existingUser, _ = repository.FindUserByEmail(*user.Username)
+	var existingUser *user.User
+	if user.IsValidEmail(*u.Username) {
+		existingUser, _ = user.FindUserByEmail(*u.Username)
 	} else {
-		existingUser, _ = repository.FindUserByUsername(*user.Username)
+		existingUser, _ = user.FindUserByUsername(*u.Username)
 	}
 
 	if err != nil {
@@ -48,8 +47,8 @@ func (h *Login) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// we found the user now let's see if password match
-	if checkPasswordHash(user.Password, existingUser.Password) == false {
+	// we found the u now let's see if password match
+	if checkPasswordHash(u.Password, existingUser.Password) == false {
 		util.JSONError(w, http.StatusUnauthorized, "Invalid username or password")
 		return
 	}

@@ -5,8 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/M-Agoumi/account-spotify-backend/config"
-	"github.com/M-Agoumi/account-spotify-backend/model"
-	"github.com/M-Agoumi/account-spotify-backend/model/repository"
+	"github.com/M-Agoumi/account-spotify-backend/model/user"
 	"github.com/M-Agoumi/account-spotify-backend/util"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -20,8 +19,8 @@ type Register struct{}
 // @todo add captcha for all endpoints in this file
 func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 	// Load the body
-	var user model.User
-	err := util.DecodeJSONBody(r, &user)
+	var u user.User
+	err := util.DecodeJSONBody(r, &u)
 	if err != nil {
 		fmt.Println(err)
 		util.JSONError(w, http.StatusBadRequest, err.Error())
@@ -29,8 +28,8 @@ func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if email is taken
-	var existingUser model.User
-	config.DB.Where("email = ?", user.Email).First(&existingUser)
+	var existingUser user.User
+	config.DB.Where("email = ?", u.Email).First(&existingUser)
 
 	if existingUser.ID != 0 {
 		util.JSONError(w, http.StatusBadRequest, "User already registered")
@@ -38,8 +37,8 @@ func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// hash password
-	user.Password, _ = hashPassword(user.Password)
-	result := config.DB.Create(&user)
+	u.Password, _ = hashPassword(u.Password)
+	result := config.DB.Create(&u)
 	if result.Error != nil {
 		util.JSONError(w, http.StatusInternalServerError, "Something went wrong, please try again later")
 		return
@@ -49,21 +48,21 @@ func (h *Register) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Register) CheckEmail(w http.ResponseWriter, r *http.Request) {
-	var user model.User
-	if err := decodeRequestBody(w, r, &user); err != nil {
+	var u user.User
+	if err := decodeRequestBody(w, r, &u); err != nil {
 		util.JSONError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
 	// Validate the required fields
-	if err := validateUserEmail(user); err != nil {
+	if err := validateUserEmail(u); err != nil {
 		util.JSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	email := *user.Email
+	email := *u.Email
 
-	existingUser, err := repository.FindUserByEmail(email)
+	existingUser, err := user.FindUserByEmail(email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		util.JSONError(w, http.StatusInternalServerError, "Database error")
 		return

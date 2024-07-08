@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/M-Agoumi/account-spotify-backend/application"
 	"github.com/M-Agoumi/account-spotify-backend/config"
-	"github.com/M-Agoumi/account-spotify-backend/model"
+	"github.com/M-Agoumi/account-spotify-backend/model/reset"
+	"github.com/M-Agoumi/account-spotify-backend/model/user"
 	"github.com/joho/godotenv"
 	"log"
 )
@@ -19,7 +20,7 @@ func main() {
 	app := application.New()
 
 	config.ConnectDatabase() // Initialize the database connection
-	errMigration := config.DB.AutoMigrate(&model.User{})
+	errMigration := config.DB.AutoMigrate(&user.User{}, &reset.PasswordReset{})
 
 	if errMigration != nil {
 		return
